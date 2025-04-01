@@ -1,16 +1,31 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const Task = require("../models/Task");
 
 const router = express.Router();
 
-// Získání všech úkolů
+// Získání úkolů s možností filtrace podle assignedTo
 router.get("/", async (req, res) => {
   try {
-    const tasks = await Task.find(); // 📌 Načítáme všechny úkoly
+    const { assignedTo } = req.query; // Příjem parametru pro uživatele
+
+    let query = {};
+
+    if (assignedTo) {
+      if (assignedTo === "unassigned") {
+        query.assignedTo = null;
+      } else {
+        query.assignedTo = new mongoose.Types.ObjectId(assignedTo);
+      }
+    }
+
+    // Načítání úkolů z databáze s možným filtrováním
+    const tasks = await Task.find(query).populate("assignedTo", "name"); // Populace pro získání jména uživatele
     res.json(tasks);
   } catch (error) {
-    console.error("Chyba při načítání úkolů:", error);
-    res.status(500).json({ msg: "Serverová chyba" });
+    res
+      .status(500)
+      .json({ msg: "Chyba při načítání úkolů", error: error.message });
   }
 });
 

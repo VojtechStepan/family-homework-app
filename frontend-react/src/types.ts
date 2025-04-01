@@ -3,7 +3,7 @@ export interface Task {
   title: string;
   completed: boolean;
   importance: string;
-  assignedTo?: string | null;
+  assignedTo?: { _id: string; name: string };
 }
 
 export interface User {
