@@ -1,45 +1,35 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 
 interface TaskFormProps {
   onTaskAdded: () => void;
+  users: any[];
 }
 
-interface User {
-  _id: string;
-  name: string;
-}
+const importanceLevels = [
+  { value: "low", label: "Nízká" },
+  { value: "medium", label: "Střední" },
+  { value: "high", label: "Vysoká" },
+];
 
-const TaskForm: React.FC<TaskFormProps> = ({ onTaskAdded }) => {
+const TaskForm: React.FC<TaskFormProps> = ({ users, onTaskAdded }) => {
   const [title, setTitle] = useState("");
   const [assignedTo, setAssignedTo] = useState("");
-  const [users, setUsers] = useState<User[]>([]); // Stáhneme seznam uživatelů
-
-  // Načtení uživatelů při načtení komponenty
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/api/users");
-        setUsers(response.data);
-      } catch (error) {
-        console.error("Chyba při načítání uživatelů:", error);
-      }
-    };
-
-    fetchUsers();
-  }, []);
+  const [importance, setImportance] = useState(importanceLevels[1].value);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
       await axios.post("http://localhost:5000/api/tasks", {
         title,
-        assignedTo: assignedTo || undefined, // Přidáme vybraného uživatele
+        assignedTo: assignedTo || undefined,
+        importance,
       });
 
+      // Reset formu
       setTitle("");
       setAssignedTo("");
+      setImportance(importanceLevels[0].value);
       onTaskAdded();
     } catch (error) {
       console.error("Chyba při vytváření úkolu:", error);
@@ -59,14 +49,25 @@ const TaskForm: React.FC<TaskFormProps> = ({ onTaskAdded }) => {
         />
       </label>
       <br />
+      Priorita:
+      <select
+        value={importance}
+        onChange={(e) => setImportance(e.target.value)}
+      >
+        {importanceLevels.map((level) => (
+          <option key={level.value} value={level.value}>
+            {level.label}
+          </option>
+        ))}
+      </select>
+      <br />
       <label>
         Přiřadit uživateli:
         <select
           value={assignedTo}
           onChange={(e) => setAssignedTo(e.target.value)}
-          required
         >
-          <option value="">Vyberte uživatele</option>
+          <option value="">Nevybráno</option>
           {users.map((user) => (
             <option key={user._id} value={user._id}>
               {user.name}

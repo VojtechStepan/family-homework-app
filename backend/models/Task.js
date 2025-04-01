@@ -3,16 +3,23 @@ const mongoose = require("mongoose");
 const TaskSchema = new mongoose.Schema({
   title: { type: String, required: true },
   completed: { type: Boolean, default: false },
+  importance: {
+    type: String,
+    enum: ["low", "medium", "high"],
+    default: "medium",
+    required: true,
+  },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: false,
-  }, // ⬅ Změněno na false
+  },
   assignedTo: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: false,
-  }, // ⬅ Bude třeba upravit request
+  },
 });
 
-module.exports = mongoose.model("Task", TaskSchema);
+const Task = mongoose.model("Task", TaskSchema);
+module.exports = Task;

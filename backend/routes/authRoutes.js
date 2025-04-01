@@ -1,8 +1,12 @@
+// Express je populární framework pro tvorbu backendových serverů v Node.js. Po jeho načtení lze vytvářet API, pracovat s routami, middlewarem atd.
 const express = require("express");
+// Knihovna k hashování hesel
 const bcrypt = require("bcryptjs");
+// Knihovna k vytváření a ověřování tokenů
 const jwt = require("jsonwebtoken");
+// Model uživatele
 const User = require("../models/User");
-
+// Router umožňuje rozdělit backendovou aplikaci na menší moduly, což zlepšuje čitelnost a udržitelnost kódu.
 const router = express.Router();
 
 // Registrace uživatele

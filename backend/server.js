@@ -8,27 +8,17 @@ const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 
-// Pokud chceš povolit jen konkrétní doménu, například localhost:3000:
+// Povolení konkrétní domény, například localhost:3000:
+app.use(express.json());
 app.use(
   cors({
     origin: "http://localhost:3000", // Povolit požadavky pouze z této domény
   })
 );
 
-const userRoutes = require("./routes/userRoutes"); // Cesta k routeru s uživateli
-
-// Připojení routy
-app.use("/api/users", userRoutes); // Tento endpoint bude odpovídat na /api/users
-
-// Middleware
-app.use(express.json());
-app.use(
-  cors({
-    origin: "http://localhost:3000", // Povolení frontendové domény
-    credentials: true, // Pokud používáš `withCredentials: true`
-  })
-);
-//app.use("/api/auth", require("./routes/authRoutes"));
+// Připojení user APIs
+app.use("/api/users", require("./routes/userRoutes")); // Tento endpoint bude odpovídat na /api/users
+// Připojení taskových APIs
 app.use("/api/tasks", require("./routes/taskRoutes"));
 
 // Připojení k MongoDB
@@ -42,7 +32,7 @@ mongoose
 
 // Testovací endpoint
 app.get("/", (req, res) => {
-  res.send("API běží...");
+  res.send("Server běží ...");
 });
 
 app.listen(PORT, () => {
